@@ -1,1 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b0d">
+  <meta name="description" content="AFTERIMAGE — a five-minute first-person surreal photography puzzle.">
+  <meta property="og:title" content="AFTERIMAGE">
+  <meta property="og:description" content="Photograph the abandoned room. Step through what the camera imagines beyond the frame.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kenny042312-blip.github.io/afterimage/">
+  <meta property="og:image" content="https://kenny042312-blip.github.io/afterimage/afterimage-og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>AFTERIMAGE</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <main id="game" aria-label="AFTERIMAGE game">
+    <canvas id="view" width="640" height="360" aria-label="First-person game view"></canvas>
 
+    <div id="grain" aria-hidden="true"></div>
+    <div id="vignette" aria-hidden="true"></div>
+    <div id="flash" aria-hidden="true"></div>
+    <div id="transition" aria-hidden="true"></div>
+
+    <section id="titleScreen" class="screen active" aria-labelledby="gameTitle">
+      <div class="title-card">
+        <p class="eyebrow">CASE 0317 · UNIT 6B</p>
+        <h1 id="gameTitle">AFTER<span>IMAGE</span></h1>
+        <p class="hook">The room ends where the camera stops believing.</p>
+        <button id="startButton" class="primary-button">BEGIN INVESTIGATION</button>
+        <p class="start-hint">Headphones recommended · about five minutes</p>
+      </div>
+    </section>
+
+    <section id="introScreen" class="screen" aria-label="Opening note">
+      <article class="case-note">
+        <p class="eyebrow">PROPERTY LOG · 23:41</p>
+        <p>The tenant vanished from a room with no second exit.</p>
+        <p>Three undeveloped photographs were found beneath the door.</p>
+        <p class="handwritten">“Do not trust what is outside the frame.”</p>
+        <button id="enterButton" class="primary-button">ENTER UNIT 6B</button>
+      </article>
+    </section>
+
+    <header id="hud" class="hidden" aria-live="polite">
+      <div class="hud-top">
+        <div class="location-block">
+          <span class="hud-label">LOCATION</span>
+          <strong id="location">UNIT 6B · REALITY</strong>
+        </div>
+        <div class="exposure-block">
+          <span class="hud-label">EXPOSURES</span>
+          <strong id="exposures">∞</strong>
+        </div>
+      </div>
+
+      <div id="crosshair" aria-hidden="true"><i></i><b></b></div>
+
+      <div id="cameraHud" aria-hidden="true">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+        <div class="camera-readout"><span>AF</span><span>ISO 800</span><span>1/30</span></div>
+        <div id="focusLabel">SEARCHING FOR SUBJECT</div>
+      </div>
+
+      <div id="interactPrompt" class="prompt hidden"><kbd>E</kbd><span>INTERACT</span></div>
+
+      <div class="hud-bottom">
+        <div class="objective-block">
+          <span class="hud-label">CURRENT THOUGHT</span>
+          <p id="objective">Photograph the cracked wall.</p>
+        </div>
+        <div id="inventory" class="inventory empty">
+          <span class="hud-label">POCKET</span>
+          <div><span id="inventoryIcon">—</span><strong id="inventoryName">EMPTY</strong></div>
+        </div>
+      </div>
+
+      <div id="toast" role="status"></div>
+      <div id="subtitle" role="status"></div>
+    </header>
+
+    <aside id="gallery" class="hidden" aria-label="Afterimage gallery">
+      <span class="hud-label">AFTERIMAGES</span>
+      <div class="filmstrip">
+        <div class="film locked" data-state="drowned"><i>01</i><span>DROWNED</span></div>
+        <div class="film locked" data-state="longhall"><i>02</i><span>LONG HALL</span></div>
+        <div class="film locked" data-state="negative"><i>03</i><span>NEGATIVE</span></div>
+      </div>
+    </aside>
+
+    <div id="photoDevelop" aria-hidden="true">
+      <div class="photo-paper"><canvas id="photoCanvas" width="320" height="180"></canvas><p id="photoCaption">UNTITLED</p></div>
+    </div>
+
+    <dialog id="keypad" aria-labelledby="keypadTitle">
+      <form method="dialog">
+        <p class="eyebrow">DEADBOLT MEMORY LOCK</p>
+        <h2 id="keypadTitle">ENTER REMEMBERED TIME</h2>
+        <output id="keypadDisplay">··:··</output>
+        <div class="key-grid">
+          <button value="1">1</button><button value="2">2</button><button value="3">3</button>
+          <button value="4">4</button><button value="5">5</button><button value="6">6</button>
+          <button value="7">7</button><button value="8">8</button><button value="9">9</button>
+          <button value="clear">C</button><button value="0">0</button><button value="enter">↵</button>
+        </div>
+        <button value="cancel" class="text-button">STEP AWAY</button>
+      </form>
+    </dialog>
+
+    <section id="ending" class="screen" aria-label="Ending">
+      <div class="ending-card">
+        <p class="eyebrow">CASE 0317 · RESOLVED?</p>
+        <h2>THE DOOR OPENS<br><span>INTO THE SAME ROOM.</span></h2>
+        <p>You step through. On the other side, a camera waits on the floor.</p>
+        <p class="handwritten">Its last photograph is of you.</p>
+        <div class="ending-stats">
+          <span>TIME <strong id="finalTime">00:00</strong></span>
+          <span>EXPOSURES <strong id="finalShots">0</strong></span>
+          <span>AFTERIMAGES <strong>3/3</strong></span>
+        </div>
+        <button id="restartButton" class="primary-button">DEVELOP AGAIN</button>
+      </div>
+    </section>
+
+    <section id="help" class="panel hidden" aria-label="Controls">
+      <button id="closeHelp" class="panel-close" aria-label="Close controls">×</button>
+      <p class="eyebrow">CONTROLS</p>
+      <div class="control-grid">
+        <kbd>W A S D</kbd><span>Move</span>
+        <kbd>MOUSE / ← →</kbd><span>Look</span>
+        <kbd>C</kbd><span>Raise camera</span>
+        <kbd>CLICK / SPACE</kbd><span>Take photograph</span>
+        <kbd>E</kbd><span>Interact</span>
+        <kbd>H</kbd><span>Show controls</span>
+      </div>
+      <p>Walk into a developed photograph to enter it. A photograph inside an afterimage leads back.</p>
+    </section>
+
+    <nav id="testHarness" class="test-harness hidden" aria-label="Developer test controls">
+      <strong>TEST</strong>
+      <button data-test-action="start">start</button>
+      <button data-test-action="photo:crack">photo 01</button>
+      <button data-test-action="travel:drowned">enter 01</button>
+      <button data-test-action="interact:eye">take eye</button>
+      <button data-test-action="travel:reality">return</button>
+      <button data-test-action="photo:mirror">photo 02</button>
+      <button data-test-action="travel:longhall">enter 02</button>
+      <button data-test-action="interact:socket">place eye</button>
+      <button data-test-action="travel:reality">return</button>
+      <button data-test-action="photo:window">photo 03</button>
+      <button data-test-action="travel:negative">enter 03</button>
+      <button data-test-action="interact:clock">read clock</button>
+      <button data-test-action="travel:reality">return</button>
+      <button data-test-action="interact:door">door</button>
+      <button data-test-action="solve">0317</button>
+    </nav>
+
+    <button id="helpButton" class="help-button hidden" aria-label="Show controls">?</button>
+  </main>
+  <script src="game.js?v=2"></script>
+</body>
+</html>
